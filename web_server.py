@@ -2,10 +2,11 @@ import socket
 import datetime
 import Image
 
-document_root = '/etc/page'
-host = 'localhost'
-port = 1026
+document_root = '/home/u1/page/ws'
+host = '0.0.0.0'
+port = 80
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 sock.bind((host, port))
 sock.listen(1)
 
@@ -29,10 +30,11 @@ while True:
     file_address = document_root + file_name_list
     print file_address
     if file_name_list == '/':
-        file_address = '/etc/page/page.html'
-    file_type = file_name_list.split(".")
-    file_type_list = ''.join(file_type[-1:])
-
+        file_address = '/home/u1/page/ws/page.html'
+    file_type = file_name_list.find(".")
+    file_type_list = file_name_list[file_type + 1:]
+    #file_type_list = ''.join(file_type[-1:])
+    print file_type
     print file_type_list
     if file_type_list == '/' or file_type_list == 'html':
         content_type = 'text/html'
