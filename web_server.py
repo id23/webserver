@@ -2,7 +2,7 @@ import socket
 import datetime
 import Image
 
-document_root = '/etc/page/'
+document_root = '/etc/page'
 host = 'localhost'
 port = 1026
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,18 +20,21 @@ while True:
     csock, caddr = sock.accept()
 
     req = csock.recv(1024)
-    print req
+    #print req
 
     lines = req.split()
-    file_name = lines[1].split("/")
-    file_name_list = ''.join(file_name[-1:])
+
+    file_name_list = lines[1]
+    print file_name_list
     file_address = document_root + file_name_list
-    if file_name_list == '':
+    print file_address
+    if file_name_list == '/':
         file_address = '/etc/page/page.html'
     file_type = file_name_list.split(".")
     file_type_list = ''.join(file_type[-1:])
 
-    if file_type_list == '' or file_type_list == 'html':
+    print file_type_list
+    if file_type_list == '/' or file_type_list == 'html':
         content_type = 'text/html'
     elif file_type_list == 'jpg' or file_type_list == 'jpeg':
         content_type = 'image/jpeg'
