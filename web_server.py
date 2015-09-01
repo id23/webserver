@@ -40,26 +40,43 @@ def page_open(fileaddr, header):
     csock.sendall(page_content)
 
 
-while True:
-
-    lines = "john"
-    csock, caddr = sock.accept()
-    req = csock.recv(1024)
-    lines = req.split()
-    content_type = ''
-    file_name_list = lines[1]
-    file_address = document_root + file_name_list
-    if file_name_list == '/':
-        file_address = document_root + '/page.html'
-    file_type_index = file_name_list.find(".")
-    file_type_str = file_name_list[file_type_index + 1:]
-
+def content_type_define(file_type_str):
+    global content_type
     if file_type_str == '/' or file_type_str == 'html' or file_type_str == '':
         content_type = 'text/html'
     elif file_type_str == 'jpg' or file_type_str == 'jpeg':
         content_type = 'image/jpeg'
     if content_type == '':
         content_type = 'text/html'
+    return content_type
+
+
+def file_type_define(file_name_str):
+    global file_type_str
+    file_type_index = file_name_str.find(".")
+    file_type_str = file_name_str[file_type_index + 1:]
+    return file_type_str
+
+
+def file_address_define(file_name_str):
+    global file_address
+    #file_name_str = lines[1]
+    file_address = document_root + file_name_str
+    if file_name_str == '/':
+        file_address = document_root + '/page.html'
+    return file_address
+
+
+while True:
+
+    lines = "john"
+    csock, caddr = sock.accept()
+    req = csock.recv(1024)
+    lines = req.split()
+    file_name_str = lines[1]
+    file_address = file_address_define(file_name_str)
+    file_type_str = file_type_define(file_name_str)
+    content_type = content_type_define(file_type_str)
 
     site_execution (file_address,content_type,date)
     csock.close()
