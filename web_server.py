@@ -1,6 +1,10 @@
 import socket
 import datetime
 import os.path
+import sys
+import subprocess
+from subprocess import Popen, PIPE
+
 document_root = '/etc/page'
 default_page = '/page.html'
 host = 'localhost'
@@ -25,7 +29,8 @@ def execute_site (fileaddr,content_type,date):
                  'Content-Length:{1}\r\n\r\n'.format(date, lenght(fileaddr))
         open_file(fileaddr, header)
     else:
-        header = 'HTTP/1.1 404 Not Found\r\n' \
+        header = 'HTTP/1.1 404 Not Found\r\n\r\n' \
+                 '<html><body><h1>404 Page Not Found</h1></body></html>'
 
         csock.sendall(header)
 
@@ -39,7 +44,7 @@ def open_file(fileaddr, header):
     csock.sendall(page_content)
 
 
-def define_content_type(file_type_str):
+def obtain_content_type(file_type_str):
     content_type = ''
     if file_type_str == '/' or file_type_str == 'html' or file_type_str == '':
         content_type = 'text/html'
@@ -50,13 +55,13 @@ def define_content_type(file_type_str):
     return content_type
 
 
-def define_file_type(file_name_str):
+def obtain_file_type(file_name_str):
     file_type_index = file_name_str.find(".")
     file_type = file_name_str[file_type_index + 1:]
     return file_type
 
 
-def define_file_address(file_name_str):
+def obtain_file_address(file_name_str):
     file_address = document_root + file_name_str
     if file_name_str == '/':
         file_address = document_root + default_page
@@ -64,16 +69,33 @@ def define_file_address(file_name_str):
 
 
 while True:
-
+    #a = 1
+    #execfile('/home/user1/PycharmProjects/untitled/test.py 2')
+    #p = subprocess.call([sys.executable,'/home/user1/PycharmProjects/untitled/test.py','file.html'],shell = True)
+    #print sys.argv
+    #a = 'file.html'
+    #sys.argv = [a]
+    #execfile('/home/user1/PycharmProjects/untitled/test.py')
     csock, caddr = sock.accept()
     req = csock.recv(1024)
-    if len(req) > 0:
-        lines = req.split()
-        file_name = lines[1]
-        file_address = define_file_address(file_name)
-        file_type = define_file_type(file_name)
-        content_type = define_content_type(file_type)
-        execute_site (file_address,content_type,date)
+
+    #p = subprocess.call([sys.executable,'/home/user1/PycharmProjects/untitled/test.py','file.html'],shell = True)
+    p = Popen([sys.executable,'/home/user1/PycharmProjects/untitled/test.py','file.html'], stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True)
+    output, err = p.communicate(b"input data that is passed to subprocess' stdin")
+
+    rc = p.returncode
+    #subprocess.call([sys.executable,'/home/user1/PycharmProjects/untitled/test.py','file.html'])
+    print rc
+    print output
+
+
+        #if len(req) > 0:
+    #    lines = req.split()
+    #    file_name = lines[1]
+    #    file_address = obtain_file_address(file_name)
+    #    file_type = obtain_file_type(file_name)
+    #    content_type = obtain_content_type(file_type)
+    #    execute_site (file_address,content_type,date)
 
     csock.close()
 
